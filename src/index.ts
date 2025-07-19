@@ -1,4 +1,7 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import {
+  McpServer,
+  ResourceTemplate,
+} from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import fs from "node:fs/promises";
@@ -78,6 +81,52 @@ server.resource(
           {
             uri: uri.href,
             text: "Failed to retrieve users data list",
+            mimeType: "text/plain",
+          },
+        ],
+      };
+    }
+  }
+);
+// Resource template
+server.resource(
+  "user-details",
+  new ResourceTemplate("users://{userId}/profile", { list: undefined }),
+  {
+    description: "Get a user details from the database",
+    title: "User detail",
+    mimeType: "application/json",
+  },
+  async (uri, { userId }) => {
+    try {
+      const users = await getUsers();
+      const user = users.find((u) => u.id === parseInt(userId as string));
+      if (user === null) {
+        return {
+          contents: [
+            {
+              uri: uri.href,
+              text: "User doesn't exists",
+              mimeType: "text/plain",
+            },
+          ],
+        };
+      }
+      return {
+        contents: [
+          {
+            uri: uri.href,
+            text: JSON.stringify(user),
+            mimeType: "application/json",
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        contents: [
+          {
+            uri: uri.href,
+            text: "Failed to retrieve user details",
             mimeType: "text/plain",
           },
         ],
