@@ -1,0 +1,35 @@
+{
+  "name": "mcp-server",
+  "version": "1.0.0",
+  "description": "This repository is for exploring an MCP (Model Context Protocol) server implementation using Node.js and TypeScript.",
+  "type": "module",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc && chmod 755 build/index.js",
+    "start": "node build/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+  },
+  "bin": {
+    "mcp-server": "./build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AneshSM/mcp-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AneshSM/mcp-server/issues"
+  },
+  "homepage": "https://github.com/AneshSM/mcp-server#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.16.0",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.15",
+    "express": "^5.1.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3",
+    "zod": "^3.25.76"
+  }
+}
