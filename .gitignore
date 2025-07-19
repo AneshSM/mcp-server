@@ -15,6 +15,10 @@ build/
 out/
 coverage/
 
+# Data files
+src/data/
+build/data/
+
 # IDE files
 .vscode/
 .idea/

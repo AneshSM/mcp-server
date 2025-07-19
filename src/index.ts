@@ -6,6 +6,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import fs from "node:fs/promises";
 import { text } from "node:stream/consumers";
+import { CreateMessageResultSchema } from "@modelcontextprotocol/sdk/types.js";
 // Create server instance
 const server = new McpServer({
   name: "mcp-server",
@@ -150,7 +151,7 @@ server.tool(
     readOnlyHint: false,
     destructiveHint: false,
     idempotentHint: false,
-    openWorldHint: false,
+    openWorldHint: true,
   },
   async (params) => {
     try {
@@ -164,6 +165,84 @@ server.tool(
   }
 );
 
+server.tool(
+  "create-random-user",
+  "Create a random user with fake data",
+  {
+    title: "Create random user",
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: true,
+  },
+  async () => {
+    // Generate a prompt for creating a random user
+    const prompt = {
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: "Generate a random user profile with realistic name, email, address, and phone number. Only output the user data in JSON format.",
+          },
+        },
+      ],
+      maxTokens: 1024,
+    };
+    // Use the server's prompt system to generate the user
+    const response = await server.server.request(
+      {
+        method: "sampling/createMessage",
+        params: prompt,
+      },
+      CreateMessageResultSchema
+    );
+    if (response.content.type !== "text")
+      return {
+        content: [{ type: "text", text: "Failed to generate the user data" }],
+      };
+    try {
+      const fakeUser = JSON.parse(
+        response.content.text
+          .trim()
+          .replace(/^```json/, "")
+          .replace(/```$/, "")
+      );
+      const id = await createUser(fakeUser);
+      return {
+        content: [{ type: "text", text: `User ${id} created successfully` }],
+      };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: "Failed to generate the user data" }],
+      };
+    }
+  }
+);
+
+// Prompts
+server.prompt(
+  "generate-dummy-user",
+  "Generate a dummy user based on a given name",
+  {
+    name: z.string().describe("User name"),
+  },
+  async ({ name }) => {
+    return {
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `Only Generate a dummy user profile for the name "${name}". Include realistic email, address, and phone number.`,
+          },
+        },
+      ],
+    };
+  }
+);
+
+// Handlers
 // Get Users
 async function getUsers() {
   return await import("./data/users.json", {
