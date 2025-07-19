@@ -9,6 +9,7 @@ const server = new McpServer({
   capabilities: {
     resources: {},
     tools: {},
+    prompts: {},
   },
 });
 
@@ -18,6 +19,13 @@ server.tool(
   "An example tool that echoes back the input",
   {
     message: z.string().describe("Message to echo back"),
+  },
+  {
+    title: "Example tool to echo back the message",
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
   },
   async ({ message }) => {
     return {
@@ -33,10 +41,8 @@ server.tool(
 
 // Main function to run the server
 async function main() {
-  // Use StdioServerTransport for Claude Desktop compatibility
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("MCP Server running on stdio"); // Use stderr for logging
 }
 
 main().catch((error) => {
