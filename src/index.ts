@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import fs from "node:fs/promises";
+import { text } from "node:stream/consumers";
 // Create server instance
 const server = new McpServer({
   name: "mcp-server",
@@ -50,6 +51,42 @@ server.tool(
   }
 );
 
+// Resources
+server.resource(
+  "users",
+  "users://all",
+  {
+    description: "Get all users data from the database",
+    title: "Users",
+    mimeType: "application/json",
+  },
+  async (uri) => {
+    try {
+      const users = await getUsers();
+      return {
+        contents: [
+          {
+            uri: uri.href,
+            text: JSON.stringify(users),
+            mimeType: "application/json",
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        contents: [
+          {
+            uri: uri.href,
+            text: "Failed to retrieve users data list",
+            mimeType: "text/plain",
+          },
+        ],
+      };
+    }
+  }
+);
+
+// Tools
 server.tool(
   "create-user",
   "Create a new user in the database",
@@ -78,6 +115,13 @@ server.tool(
   }
 );
 
+// Get Users
+async function getUsers() {
+  return await import("./data/users.json", {
+    with: { type: "json" },
+  }).then((m) => m.default);
+}
+
 // User creation
 async function createUser(user: {
   name: string;
@@ -85,9 +129,7 @@ async function createUser(user: {
   address: string;
   phone: string;
 }) {
-  const users = await import("./data/users.json", {
-    with: { type: "json" },
-  }).then((m) => m.default);
+  const users = await getUsers();
 
   const id = users.length + 1;
   users.push({ id, ...user });
