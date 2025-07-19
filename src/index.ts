@@ -28,14 +28,25 @@ server.tool(
     openWorldHint: false,
   },
   async ({ message }) => {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Echo: ${message}`,
-        },
-      ],
-    };
+    try {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Echo: ${message}`,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "Failed to echo back the message",
+          },
+        ],
+      };
+    }
   }
 );
 
