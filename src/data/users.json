@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "name": "Alice Johnson",
+    "email": "alice.johnson@example.com",
+    "address": "123 Maple Street, Springfield, IL 62704",
+    "phone": "+1-217-555-0123"
+  },
+  {
+    "id": 2,
+    "name": "Bob Smith",
+    "email": "bob.smith@example.com",
+    "address": "456 Oak Avenue, Lincoln, NE 68508",
+    "phone": "+1-402-555-0456"
+  },
+  {
+    "id": 3,
+    "name": "Carol Lee",
+    "email": "carol.lee@example.com",
+    "address": "789 Pine Road, Madison, WI 53703",
+    "phone": "+1-608-555-0789"
+  },
+  {
+    "id": 4,
+    "name": "David Kim",
+    "email": "david.kim@example.com",
+    "address": "321 Cedar Blvd, Austin, TX 78701",
+    "phone": "+1-512-555-0321"
+  },
+  {
+    "id": 5,
+    "name": "Eva Martinez",
+    "email": "eva.martinez@example.com",
+    "address": "654 Birch Lane, Miami, FL 33101",
+    "phone": "+1-305-555-0654"
+  },
+  {
+    "id": 6,
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "address": "123 Main St, Anytown, USA",
+    "phone": "555-0123"
+  },
+  {
+    "id": 7,
+    "name": "Frank Wilson",
+    "email": "frank.wilson@example.com",
+    "address": "987 Elm Court, Portland, OR 97201",
+    "phone": "+1-503-555-0987"
+  }
+]

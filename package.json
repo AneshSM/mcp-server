@@ -1,11 +1,12 @@
 {
   "name": "mcp-server",
   "version": "1.0.0",
-  "description": "Thids repository is for exploring an MCP (Model Context Protocol) server implementation using Node.js and TypeScript.",
+  "description": "This repository is for exploring an MCP (Model Context Protocol) server implementation using Node.js and TypeScript.",
   "type": "module",
   "main": "build/index.js",
   "scripts": {
     "server:build": "tsc && chmod 755 build/index.js",
+    "server:build:watch": "tsc -w",
     "server:start": "node build/index.js",
     "server:dev": "tsx src/index.ts",
     "server:inspect": "set DANGEROUSLY_OMIT_AUTH=true && npx @modelcontextprotocol/inspector npm run server:dev"
