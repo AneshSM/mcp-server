@@ -5,11 +5,12 @@
   "type": "module",
   "main": "build/index.js",
   "scripts": {
-    "server:build": "tsc",
-    "server:build:watch": "tsc -w",
-    "server:start": "node build/index.js",
-    "server:dev": "tsx src/index.ts",
-    "server:inspect": "set DANGEROUSLY_OMIT_AUTH=true && npx @modelcontextprotocol/inspector npm run server:dev"
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "server:dev": "tsx src/server.ts",
+    "server:inspect": "set DANGEROUSLY_OMIT_AUTH=true && npx @modelcontextprotocol/inspector npm run server:dev",
+    "client:dev": "tsx src/client.ts",
+    "client:start": "node build/client.js"
   },
   "bin": {
     "mcp-server": "./build/index.js"
@@ -29,11 +30,16 @@
     "@modelcontextprotocol/sdk": "^1.16.0",
     "@types/express": "^5.0.3",
     "express": "^5.1.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "@ai-sdk/google": "^1.2.19",
+    "@inquirer/prompts": "^7.5.3",
+    "ai": "^4.3.16",
+    "dotenv": "^16.5.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.15",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@modelcontextprotocol/inspector": "^0.14.3"
   }
 }
