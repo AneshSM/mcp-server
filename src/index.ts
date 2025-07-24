@@ -5,7 +5,8 @@ import {
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import fs from "node:fs/promises";
-import { text } from "node:stream/consumers";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { CreateMessageResultSchema } from "@modelcontextprotocol/sdk/types.js";
 // Create server instance
 const server = new McpServer({
@@ -17,6 +18,21 @@ const server = new McpServer({
     prompts: {},
   },
 });
+
+// Get the directory of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dataDir = path.join(__dirname, "data");
+const usersFilePath = path.join(dataDir, "users.json");
+
+// Type definition for User
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  address: string;
+  phone: string;
+}
 
 // Example tool implementation
 server.tool(
@@ -160,7 +176,14 @@ server.tool(
         content: [{ type: "text", text: `User ${id} created successfully` }],
       };
     } catch (error) {
-      return { content: [{ type: "text", text: "Failed to save a user" }] };
+      console.error("Create user error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      return {
+        content: [
+          { type: "text", text: `Failed to save a user: ${errorMessage}` },
+        ],
+      };
     }
   }
 );
@@ -244,27 +267,32 @@ server.prompt(
 
 // Handlers
 // Get Users
-async function getUsers() {
-  return await import("./data/users.json", {
-    with: { type: "json" },
-  }).then((m) => m.default);
+async function getUsers(): Promise<User[]> {
+  try {
+    const data = await fs.readFile(usersFilePath, "utf-8");
+    return JSON.parse(data);
+  } catch (error) {
+    // If file doesn't exist, return empty array
+    return [];
+  }
 }
 
 // User creation
-async function createUser(user: {
-  name: string;
-  email: string;
-  address: string;
-  phone: string;
-}) {
-  const users = await getUsers();
+async function createUser(user: Omit<User, "id">): Promise<number> {
+  try {
+    // Ensure data directory exists
+    await fs.mkdir(dataDir, { recursive: true });
 
-  const id = users.length + 1;
-  users.push({ id, ...user });
+    const users = await getUsers();
+    const id = users.length + 1;
+    users.push({ id, ...user });
 
-  await fs.writeFile("./src/data/users.json", JSON.stringify(users, null, 2));
-
-  return id;
+    await fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), "utf-8");
+    return id;
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw error;
+  }
 }
 
 // Main function to run the server
