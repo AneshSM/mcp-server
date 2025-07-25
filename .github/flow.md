@@ -1,9 +1,5 @@
 # Model Context Protocol (MCP) Server & Client Integration
 
-## Overview
-
-This presentation demonstrates how to build and integrate an MCP server with a client application using Node.js and TypeScript.
-
 ---
 
 ## 🎯 What is Model Context Protocol (MCP)?
