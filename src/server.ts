@@ -172,6 +172,7 @@ server.tool(
   async (params) => {
     try {
       const id = await createUser(params);
+
       return {
         content: [{ type: "text", text: `User ${id} created successfully` }],
       };
@@ -230,14 +231,16 @@ server.tool(
           .trim()
           .replace(/^```json/, "")
           .replace(/```$/, "")
+          .trim()
       );
+
       const id = await createUser(fakeUser);
       return {
         content: [{ type: "text", text: `User ${id} created successfully` }],
       };
     } catch (error) {
       return {
-        content: [{ type: "text", text: "Failed to generate the user data" }],
+        content: [{ type: "text", text: "Failed to generate user data" }],
       };
     }
   }
@@ -257,7 +260,7 @@ server.prompt(
           role: "user",
           content: {
             type: "text",
-            text: `Only Generate a dummy user profile for the name "${name}". Include realistic email, address, and phone number.`,
+            text: `Generate a dummy user with the name ${name}. The user should have a realistic email, address, and phone number.`,
           },
         },
       ],

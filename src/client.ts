@@ -11,7 +11,12 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { generateText, jsonSchema, ToolSet } from "ai";
 
-const mcp = new Client(
+// mo
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
+const client = new Client(
   {
     name: "text-client-video",
     version: "1.0.0",
@@ -25,23 +30,19 @@ const transport = new StdioClientTransport({
   stderr: "ignore",
 });
 
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
-
 async function main() {
   // Connect to the Model Context Protocol server
-  await mcp.connect(transport);
+  await client.connect(transport);
 
   const [{ tools }, { prompts }, { resources }, { resourceTemplates }] =
     await Promise.all([
-      mcp.listTools(),
-      mcp.listPrompts(),
-      mcp.listResources(),
-      mcp.listResourceTemplates(),
+      client.listTools(),
+      client.listPrompts(),
+      client.listResources(),
+      client.listResourceTemplates(),
     ]);
 
-  mcp.setRequestHandler(CreateMessageRequestSchema, async (request) => {
+  client.setRequestHandler(CreateMessageRequestSchema, async (request) => {
     const texts: string[] = [];
     for (const message of request.params.messages) {
       const text = await handleServerMessagePrompt(message);
@@ -63,7 +64,7 @@ async function main() {
   while (true) {
     const option = await select({
       message: "What would you like to do",
-      choices: ["Query", "Tools", "Resources", "Prompts"],
+      choices: ["Query", "Tools", "Resources", "Prompts", "Exit"],
     });
 
     switch (option) {
@@ -131,6 +132,9 @@ async function main() {
       case "Exit":
         console.log("Exiting...");
         process.exit(0);
+      default:
+        console.error("Unknown option selected.");
+        break;
     }
   }
 }
@@ -148,7 +152,7 @@ async function handleQuery(tools: Tool[]) {
           description: tool.description,
           parameters: jsonSchema(tool.inputSchema),
           execute: async (args: Record<string, any>) => {
-            return await mcp.callTool({
+            return await client.callTool({
               name: tool.name,
               arguments: args,
             });
@@ -175,7 +179,7 @@ async function handleTool(tool: Tool) {
     });
   }
 
-  const res = await mcp.callTool({
+  const res = await client.callTool({
     name: tool.name,
     arguments: args,
   });
@@ -197,7 +201,7 @@ async function handleResource(uri: string) {
     }
   }
 
-  const res = await mcp.readResource({
+  const res = await client.readResource({
     uri: finalUri,
   });
 
@@ -214,7 +218,7 @@ async function handlePrompt(prompt: Prompt) {
     });
   }
 
-  const response = await mcp.getPrompt({
+  const response = await client.getPrompt({
     name: prompt.name,
     arguments: args,
   });
